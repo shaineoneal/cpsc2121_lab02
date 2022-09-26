@@ -72,8 +72,7 @@ int infixToPostfix(string infix[], int length, string postfix[])
         else if (infix[i] == "+" || infix[i] == "-") {
 
             //if item in operators stack has higher priority
-            if (operators.top() == "*" || operators.top() == "/" || operators.top() == "%" 
-                || operators.top() == "+" || operators.top() == "-") {
+            if (operators.empty() || operators.top() == "*" || operators.top() == "/" || operators.top() == "%") {
 
                 //while operators stack is not empty AND top of operators stack is not open parentheses
                 while(!operators.empty() && operators.top() != "(") {
@@ -82,15 +81,16 @@ int infixToPostfix(string infix[], int length, string postfix[])
                     operators.pop();
                     postfixTop++; 
                 }
+                operators.push(infix[i]);
             }
             //if item in operators stack has the same priority
             else if(operators.top() == "+" || operators.top() == "-") {
                 postfix[postfixTop] = operators.top();
                 operators.pop();
                 postfixTop++;
-            }   
-            //add infix[i] to operators
-            operators.push(infix[i]);
+                operators.push(infix[i]);
+            }
+            
            
         }
         
