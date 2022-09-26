@@ -38,61 +38,63 @@ int infixToPostfix(string infix[], int length, string postfix[])
     stack<string> operators;
     int postfixTop = 0; 
 
+    //check for mismatched parenthesis
     for(int i = 0; i < length; i++) {
-        //if item is a number
-        if(infix[i] == "1" || infix[i] == "2" || infix[i] == "3" || infix[i] == "4" || infix[i] == "5" || infix[i] == "6" 
-            || infix[i] == "7" || infix[i] == "8" || infix[i] == "9" || infix[i] == "0")
-        {
-            postfix[postfixTop] = infix[i];
-            postfixTop++;
-        }
+        int openParen = 0,
+            closeParen = 0;
+        if(infix[i] == "(") openParen++;
+        else if(infix[i] == ")") closeParen++;
+
+        if(openParen != closeParen) return 0;
+    }
+
+    for(int i = 0; i < length; i++) {
+        
         //if item is open parentheses
-        else if(infix[i] == "(") {
+        if(infix[i] == "(") {
             operators.push(infix[i]);
         }
         //if item is high priority
         else if(infix[i] == "*" || infix[i] == "/" || infix[i] == "%") {
-            //if item is high priority AND operators is empty
-            if(operators.empty()) {
+            //if item is high priority AND top of operators is lower priority or empty
+            if(operators.empty() || operators.top() == "+" || operators.top() == "-" || operators.top() == "(") {
                 operators.push(infix[i]);
             }
-            //if item is high priority AND top of operators is lower priority
-            else if(operators.top() == "+" || operators.top() == "-" || operators.top() == "(") {
+            //if item is high priority AND top of operators is high priority
+            else {
+                postfix[postfixTop] = operators.top();
+                operators.pop();
                 operators.push(infix[i]);
+                postfixTop++;
             }
         }
         //if item is low priority
         else if (infix[i] == "+" || infix[i] == "-") {
-            if(operators.empty() || operators.top() == "(") {
-                operators.push(infix[i]);
-            }
 
-            //if item in operators stack has higher precedence
-            else if (operators.top() == "*" || operators.top() == "/" || operators.top() == "%" 
+            //if item in operators stack has higher priority
+            if (operators.top() == "*" || operators.top() == "/" || operators.top() == "%" 
                 || operators.top() == "+" || operators.top() == "-") {
 
+                //while operators stack is not empty AND top of operators stack is not open parentheses
                 while(!operators.empty() && operators.top() != "(") {
-                    
-                //remove top item from operators and add it to postfix
+                    //remove top item from operators and add it to postfix
                     postfix[postfixTop] = operators.top();
                     operators.pop();
                     postfixTop++; 
                 }
-                
-                //add infix[i] to operators
-                operators.push(infix[i]);
             }
-
-            //if item in operators stack has a lower precedence
+            //if item in operators stack has the same priority
             else if(operators.top() == "+" || operators.top() == "-") {
                 postfix[postfixTop] = operators.top();
                 operators.pop();
                 postfixTop++;
-                operators.push(infix[i]);
-            }
+            }   
+            //add infix[i] to operators
+            operators.push(infix[i]);
+           
         }
         
-        
+        //if item is close parentheses
         else if (infix[i] == ")") {
             while(operators.top() != "("){
                 postfix[postfixTop] = operators.top();
@@ -100,6 +102,11 @@ int infixToPostfix(string infix[], int length, string postfix[])
                 postfixTop++;
             }
             operators.pop();
+        }
+        //if item is a number
+        else {
+            postfix[postfixTop] = infix[i];
+            postfixTop++;
         }
     }
 
@@ -115,7 +122,7 @@ int infixToPostfix(string infix[], int length, string postfix[])
 //Main function to test infixToPostfix()
 //Should convert 2 + 3 * 4 + ( 5 - 6 + 7 ) * 8
 //            to 2 3 4 * + 5 6 - 7 + 8 * +
-int main()
+/*int main()
 {
     string infixExp[] = {"2", "+", "3", "*", "4", "+", "(",
                          "5", "-", "6", "+", "7", ")", "*",
@@ -143,4 +150,4 @@ int main()
     cout << "Length: " << postfixLength << endl;
 
     return 0;
-}
+}*/
